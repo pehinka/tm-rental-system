@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>t.m Rental System</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon-192.svg">
+  <link rel="apple-touch-icon" href="/icon-192.svg">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0f;--card:#13131a;--border:#1e1e2e;--border2:#2a2a3a;--text:#f0f0f5;--text2:#a0a0b5;--text3:#6b6b80;--green:#00e5a0;--green2:#00c48c;--blue:#00b4d8;--red:#ff4d4f;--orange:#ff9f43;--font:'DM Sans','Segoe UI',system-ui,-apple-system,sans-serif;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+    .hidden{display:none!important}
+    .gradient-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--green),var(--blue));color:var(--bg);border:none;border-radius:12px;font-size:15px;font-weight:700;letter-spacing:1px;cursor:pointer;font-family:var(--font)}
+    .gradient-btn:active{opacity:.9;transform:scale(.98)}.gradient-btn:disabled{opacity:.5}
+    .gradient-btn.sm{font-size:13px;padding:12px}
+    .back-link{background:transparent;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:0;margin-bottom:20px;display:block;font-family:var(--font)}
+    .section-title{color:var(--text3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+    .screen{min-height:100vh;padding:calc(16px + var(--safe-top)) 16px calc(40px + var(--safe-bottom))}
+    .screen-center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .screen-inner{max-width:440px;margin:0 auto}
+    /* Login */
+    .login-card{background:var(--card);border-radius:20px;padding:40px 28px;max-width:380px;width:100%;border:1px solid var(--border)}
+    .login-logo{text-align:center;margin-bottom:8px}
+    .logo-icon{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--blue));color:var(--bg);font-weight:800;font-size:20px;letter-spacing:1px}
+    .login-title{color:var(--text);font-size:22px;font-weight:300;letter-spacing:4px;text-transform:lowercase;margin:12px 0 0;text-align:center}
+    .login-sub{color:var(--text3);font-size:13px;text-align:center;margin-bottom:28px}
+    .field-label{color:#8888a0;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;margin-top:16px}
+    .input{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:15px;outline:none;font-family:var(--font)}
+    .input:focus{border-color:var(--green)}
+    .input.sm{padding:10px 14px;font-size:14px}
+    select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b6b80' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+    select.input option{background:var(--card);color:var(--text)}
+    .err-box{background:#ff4d4f18;border:1px solid #ff4d4f44;border-radius:10px;padding:10px 14px;color:#ff6b6b;font-size:13px;margin-bottom:8px}
+    .success-box{background:#00e5a018;border:1px solid #00e5a044;border-radius:10px;padding:10px 14px;color:var(--green);font-size:13px;margin-bottom:8px}
+    .demo-hint{margin-top:24px;padding:14px 16px;background:var(--bg);border-radius:10px;color:var(--text3);font-size:12px;line-height:1.6;border:1px solid var(--border)}
+    /* Home */
+    .home-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+    .home-logo{display:flex;align-items:center;gap:10px}
+    .home-logo-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--blue));color:var(--bg);font-weight:800;font-size:13px}
+    .home-logo-text{color:var(--text3);font-size:13px;letter-spacing:3px;text-transform:lowercase}
+    .home-greeting{color:var(--text);font-size:22px;font-weight:600;margin-top:12px}
+    .logout-btn{background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--text3);padding:8px 14px;font-size:12px;cursor:pointer;font-family:var(--font)}
+    .scan-btn{width:100%;padding:20px;background:linear-gradient(135deg,var(--green),var(--blue));color:var(--bg);border:none;border-radius:16px;font-size:16px;font-weight:700;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;font-family:var(--font)}
+    .scan-btn:active{opacity:.9;transform:scale(.98)}
+    /* Category accordion */
+    .cat-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:6px;cursor:pointer;user-select:none}
+    .cat-header:active{background:#1a1a24}
+    .cat-left{display:flex;align-items:center;gap:10px}
+    .cat-name{color:var(--text);font-size:14px;font-weight:600}
+    .cat-stats{display:flex;gap:8px}
+    .cat-stat{font-size:11px;padding:2px 8px;border-radius:8px;font-weight:600}
+    .cat-arrow{color:var(--text3);font-size:14px;transition:transform .2s}
+    .cat-arrow.open{transform:rotate(90deg)}
+    .cat-items{padding:0 0 12px 0}
+    .item-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;margin:2px 0;border-radius:8px;cursor:pointer}
+    .item-row:active{background:var(--card)}
+    .item-left{display:flex;align-items:center;gap:10px}
+    .item-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .item-row-name{color:var(--text);font-size:13px}
+    .item-row-meta{color:var(--text3);font-size:11px;margin-top:1px}
+    .item-arrow{color:var(--text3);font-size:16px}
+    .days-badge{font-size:10px;padding:2px 6px;border-radius:6px;background:#ff4d4f22;color:var(--red);font-weight:600;margin-left:6px}
+    /* My borrowed */
+    .my-item{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer}
+    .my-item:active{background:#1a1a24}
+    .my-item-name{color:var(--text);font-size:14px;font-weight:500}
+    .my-item-meta{color:var(--text3);font-size:12px;margin-top:2px}
+    /* Nav */
+    .nav-grid{display:flex;gap:10px;margin-bottom:24px}
+    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 12px;background:var(--card);border:1px solid var(--border);border-radius:14px;color:var(--text2);font-size:13px;cursor:pointer;font-family:var(--font)}
+    .nav-btn:active{background:#1a1a24}
+    .empty-msg{color:var(--text3);font-size:13px;text-align:center;padding:20px 0}
+    .mb-20{margin-bottom:20px}.mb-24{margin-bottom:24px}
+    /* Item Action */
+    .action-card{background:var(--card);border-radius:20px;padding:32px 24px;max-width:400px;width:100%;border:1px solid var(--border)}
+    .item-header{text-align:center;margin-bottom:20px}
+    .item-category{color:var(--text3);font-size:12px;text-transform:uppercase;letter-spacing:2px}
+    .item-title{color:var(--text);font-size:22px;font-weight:600;margin:8px 0}
+    .item-id-badge{display:inline-block;background:var(--bg);color:var(--text3);padding:6px 14px;border-radius:20px;font-size:12px;letter-spacing:1px;border:1px solid var(--border)}
+    .status-badge-large{text-align:center;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;letter-spacing:1px;margin-bottom:16px}
+    .borrowed-info{color:var(--text2);font-size:13px;text-align:center;margin-bottom:8px}
+    .action-btns{display:flex;gap:10px;margin-bottom:16px}
+    .action-btn-green{flex:1;padding:16px;background:#00e5a018;border:2px solid var(--green);border-radius:12px;color:var(--green);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font)}
+    .action-btn-red{flex:1;padding:16px;background:#ff4d4f18;border:2px solid var(--red);border-radius:12px;color:var(--red);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font)}
+    .cant-return{color:var(--text3);font-size:13px;text-align:center;padding:16px}
+    /* Popup */
+    .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
+    .popup-card{background:#1a1a24;border-radius:20px;padding:32px 24px;max-width:380px;width:100%;border:1px solid var(--border2);text-align:center;animation:popIn .25s ease-out}
+    @keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+    .popup-icon{width:56px;height:56px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin-bottom:16px}
+    .popup-success-icon{width:64px;height:64px;border-radius:50%;background:#00e5a022;color:var(--green);display:inline-flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:16px}
+    .popup-title{color:var(--text);font-size:18px;font-weight:600;margin:0 0 16px}
+    .popup-info{background:var(--bg);border-radius:12px;padding:4px 0;margin-bottom:16px;border:1px solid var(--border);text-align:left}
+    .popup-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border)}
+    .popup-row:last-child{border-bottom:none}
+    .popup-label{color:var(--text3);font-size:13px}
+    .popup-value{color:var(--text);font-size:13px;font-weight:500}
+    .popup-action-badge{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px}
+    .popup-btns{display:flex;gap:10px}
+    .popup-btn-cancel{flex:1;padding:14px;background:var(--bg);border:1px solid var(--border2);border-radius:12px;color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
+    .popup-btn-confirm{flex:1;padding:14px;border:none;border-radius:12px;color:var(--bg);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}
+    .note-input{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:13px;outline:none;font-family:var(--font);margin-bottom:16px;text-align:left}
+    .note-input::placeholder{color:var(--text3)}
+    /* Scanner */
+    .scanner-overlay{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column}
+    .scanner-inner{flex:1;display:flex;flex-direction:column;align-items:center;padding:20px;padding-top:calc(20px + var(--safe-top))}
+    .scanner-header{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:400px;margin-bottom:20px}
+    .scanner-title{color:var(--text);font-size:18px;font-weight:600}
+    .scanner-close{background:var(--border);border:none;color:var(--text);width:40px;height:40px;border-radius:10px;font-size:18px;cursor:pointer}
+    #qrReader{background:#000;border-radius:20px}
+    #qrReader video{border-radius:20px}
+    #qrReader__dashboard,#qrReader img[alt="Info icon"],#qrReader__header_message{display:none!important}
+    .manual-section{margin-top:20px;width:100%;max-width:350px}
+    .manual-toggle{background:transparent;border:none;color:var(--green);font-size:14px;cursor:pointer;padding:8px 0;width:100%;text-align:center;font-family:var(--font)}
+    .manual-form{display:flex;flex-direction:column;gap:10px}
+    .scan-hint{color:var(--text3);font-size:12px;margin-top:16px;text-align:center;max-width:300px}
+    /* History */
+    .history-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px}
+    .history-top{display:flex;justify-content:space-between;margin-bottom:6px}
+    .history-action{font-size:12px;font-weight:700;letter-spacing:1px}
+    .history-date{color:var(--text3);font-size:12px}
+    .history-name{color:var(--text);font-size:14px}
+    .history-user{color:var(--text3);font-size:12px;margin-top:4px}
+    .history-note{color:var(--orange);font-size:12px;margin-top:4px;font-style:italic}
+    .filter-bar{display:flex;gap:8px;margin-bottom:16px}
+    .filter-bar .input{padding:10px 12px;font-size:13px}
+    .export-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);margin-bottom:16px}
+    .export-btn:active{background:#1a1a24}
+    /* Admin */
+    .admin-tabs{display:flex;gap:4px;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:24px;border:1px solid var(--border)}
+    .admin-tab{flex:1;padding:12px 6px;background:transparent;border:none;border-radius:10px;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s}
+    .admin-tab.active{background:var(--card);color:var(--text)}
+    .admin-stats{display:flex;gap:10px;margin-bottom:24px}
+    .stat-box{flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+    .stat-num{font-size:28px;font-weight:700}
+    .stat-label{color:var(--text3);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+    .admin-list-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px}
+    .admin-list-header{display:flex;justify-content:space-between;align-items:center}
+    .admin-list-title{color:var(--text);font-size:14px;font-weight:500}
+    .admin-list-sub{color:var(--text3);font-size:12px;margin-top:2px}
+    .admin-list-badge{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+    .admin-list-actions{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+    .admin-action-btn{flex:1;padding:10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);border:none}
+    .admin-action-btn.edit{background:#00e5a018;color:var(--green);border:1px solid #00e5a044}
+    .admin-action-btn.delete{background:#ff4d4f18;color:var(--red);border:1px solid #ff4d4f44}
+    .admin-action-btn:active{opacity:.7}
+    .admin-action-btn:disabled{opacity:.3}
+    .form-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px}
+    .form-card h3{color:var(--text);font-size:16px;font-weight:600;margin-bottom:16px}
+    .form-row{margin-bottom:12px}
+    .form-row label{color:var(--text3);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px}
+    .form-btns{display:flex;gap:8px}
+    .form-btn-secondary{flex:1;padding:12px;background:var(--bg);border:1px solid var(--border2);border-radius:12px;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)}
+    /* Category admin */
+    .cat-admin-item{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px}
+    .cat-admin-name{flex:1;color:var(--text);font-size:14px}
+    .cat-admin-count{color:var(--text3);font-size:12px;margin-right:8px}
+    .cat-order-btn{width:30px;height:30px;border:1px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text3);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .cat-order-btn:active{background:var(--card)}
+    .cat-order-btn:disabled{opacity:.2}
+    .cat-edit-btn{width:30px;height:30px;border:1px solid #00e5a044;border-radius:6px;background:#00e5a018;color:var(--green);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .cat-del-btn{width:30px;height:30px;border:1px solid #ff4d4f44;border-radius:6px;background:#ff4d4f18;color:var(--red);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .screen-title{color:var(--text);font-size:20px;font-weight:600;margin-bottom:20px}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="screen-center">
+  <div class="login-card">
+    <div class="login-logo"><div class="logo-icon">TM</div><h1 class="login-title">rental system</h1></div>
+    <p class="login-sub">Přihlas se pro přístup k systému zápůjček</p>
+    <div id="loginError" class="err-box hidden"></div>
+    <label class="field-label">Email</label><input type="email" id="loginEmail" class="input" placeholder="tvuj.mail@ceskatelevize.cz">
+    <label class="field-label">PIN</label><input type="password" id="loginPin" class="input" placeholder="••••" maxlength="4" inputmode="numeric">
+    <button id="loginBtn" class="gradient-btn" style="margin-top:28px">PŘIHLÁSIT SE</button>
+    <div class="demo-hint"><strong>Zapoměl jsi PIN?</strong><br>Napiš Terece Gajdoš!</div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="homeScreen" class="screen hidden">
+  <div class="screen-inner">
+    <div class="home-header">
+      <div><div class="home-logo"><span class="home-logo-icon">TM</span><span class="home-logo-text">rental system</span></div><p class="home-greeting" id="homeGreeting"></p></div>
+      <button class="logout-btn" id="logoutBtn">Odhlásit</button>
+    </div>
+    <button class="scan-btn" id="scanOpenBtn">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+      SKENOVAT QR KÓD
+    </button>
+    <div id="myBorrowedSection" class="mb-24 hidden"><h3 class="section-title">Moje zápůjčky</h3><div id="myBorrowedList"></div></div>
+    <div class="nav-grid">
+      <button class="nav-btn" id="historyBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Historie</button>
+      <button class="nav-btn hidden" id="adminBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Správa</button>
+    </div>
+    <div id="categoriesList" class="mb-24"></div>
+  </div>
+</div>
+
+<!-- ITEM DETAIL -->
+<div id="itemScreen" class="screen-center hidden">
+  <div class="action-card">
+    <button class="back-link" id="itemBack">← Zpět</button>
+    <div class="item-header">
+      <span class="item-category" id="itemCategory"></span>
+      <h2 class="item-title" id="itemTitle"></h2>
+      <span class="item-id-badge" id="itemIdBadge"></span>
+    </div>
+    <div class="status-badge-large" id="itemStatus"></div>
+    <p class="borrowed-info hidden" id="itemBorrowedInfo"></p>
+    <p class="borrowed-info hidden" id="itemDaysInfo"></p>
+    <div class="action-btns" id="itemActions"></div>
+  </div>
+</div>
+
+<!-- SCANNER -->
+<div id="scannerScreen" class="scanner-overlay hidden">
+  <div class="scanner-inner">
+    <div class="scanner-header"><h2 class="scanner-title">Skenuj QR kód</h2><button class="scanner-close" id="scanCloseBtn">✕</button></div>
+    <div id="qrReader" style="width:100%;max-width:350px;border-radius:20px;overflow:hidden"></div>
+    <div class="manual-section">
+      <button class="manual-toggle" id="manualToggleBtn">Zadat ručně</button>
+      <div class="manual-form hidden" id="manualForm">
+        <input type="text" class="input" id="manualInput" placeholder="Zadej ID položky (např. ITEM-001)">
+        <button class="gradient-btn" id="manualSubmitBtn">Potvrdit</button>
+        <button class="manual-toggle" id="manualBackBtn">Zpět na kameru</button>
+      </div>
+    </div>
+    <p class="scan-hint" id="scanHint">Namiř kameru na QR kód položky</p>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="historyScreen" class="screen hidden">
+  <div class="screen-inner">
+    <button class="back-link" id="historyBack">← Zpět</button>
+    <h2 class="screen-title">Historie zápůjček</h2>
+    <div id="historyExportBtn" class="hidden"><button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button></div>
+    <div class="filter-bar">
+      <input type="text" class="input" id="filterUser" placeholder="Jméno...">
+      <input type="text" class="input" id="filterItem" placeholder="Kód položky...">
+      <button class="gradient-btn sm" style="width:auto;padding:10px 16px" onclick="loadHistory()">Filtrovat</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen" class="screen hidden">
+  <div class="screen-inner">
+    <button class="back-link" id="adminBack">← Zpět</button>
+    <h2 class="screen-title">Správa systému</h2>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="overview" id="tabOverview">Přehled</button>
+      <button class="admin-tab" data-tab="categories" id="tabCategories">Kategorie</button>
+      <button class="admin-tab" data-tab="items" id="tabItems">Položky</button>
+      <button class="admin-tab" data-tab="users" id="tabUsers">Uživatelé</button>
+    </div>
+    <div id="adminTabOverview"></div>
+    <div id="adminTabCategories" class="hidden"></div>
+    <div id="adminTabItems" class="hidden"></div>
+    <div id="adminTabUsers" class="hidden"></div>
+  </div>
+</div>
+
+<div id="popup" class="popup-overlay hidden"></div>
+<div id="editPopup" class="popup-overlay hidden"></div>
+
+<script>
+const API = window.location.origin + "/api";
+let token = localStorage.getItem("tm_token") || null;
+let currentUser = JSON.parse(localStorage.getItem("tm_user") || "null");
+let allItems = [], allCategories = [], openCats = {};
+
+async function api(m, p, b) {
+  const o = { method: m, headers: { "Content-Type": "application/json" } };
+  if (token) o.headers["Authorization"] = "Bearer " + token;
+  if (b) o.body = JSON.stringify(b);
+  const r = await fetch(API + p, o);
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.error || "Chyba serveru");
+  return d;
+}
+function esc(s) { if (!s) return ""; const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+function daysBetween(d1, d2) { return Math.floor((d2 - d1) / 86400000); }
+
+const screens = ["loginScreen","homeScreen","itemScreen","scannerScreen","historyScreen","adminScreen"];
+function showScreen(id) { screens.forEach(s => document.getElementById(s).classList.toggle("hidden", s !== id)); }
+
+// ── Login ─────────────────────────────────
+document.getElementById("loginBtn").onclick = async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  const pin = document.getElementById("loginPin").value.trim();
+  const err = document.getElementById("loginError");
+  if (!email || !pin) { err.textContent = "Vyplň email a PIN"; err.classList.remove("hidden"); return; }
+  try {
+    const data = await api("POST", "/login", { email, pin });
+    token = data.token; currentUser = data.user;
+    localStorage.setItem("tm_token", token); localStorage.setItem("tm_user", JSON.stringify(currentUser));
+    err.classList.add("hidden"); loadHome();
+  } catch (e) { err.textContent = e.message; err.classList.remove("hidden"); }
+};
+["loginEmail","loginPin"].forEach(id => document.getElementById(id).addEventListener("keydown", e => { if (e.key==="Enter") document.getElementById("loginBtn").click(); }));
+document.getElementById("loginPin").addEventListener("input", e => { e.target.value = e.target.value.replace(/\D/g, ""); });
+document.getElementById("logoutBtn").onclick = () => { token=null; currentUser=null; localStorage.removeItem("tm_token"); localStorage.removeItem("tm_user"); showScreen("loginScreen"); };
+
+// ── Home ──────────────────────────────────
+async function loadHome() {
+  showScreen("homeScreen");
+  try {
+    [allItems, allCategories] = await Promise.all([api("GET","/items"), api("GET","/categories")]);
+  } catch (e) {
+    if (e.message.includes("přihlášen")||e.message.includes("token")) { token=null;currentUser=null;localStorage.removeItem("tm_token");localStorage.removeItem("tm_user");showScreen("loginScreen");return; }
+  }
+  const isAdmin = currentUser.role === "admin";
+  document.getElementById("homeGreeting").textContent = "Ahoj, " + currentUser.name.split(" ")[0];
+  document.getElementById("adminBtn").classList.toggle("hidden", !isAdmin);
+
+  // My borrowed
+  const myBorrowed = allItems.filter(i => i.borrowed_by === currentUser.id);
+  const mySection = document.getElementById("myBorrowedSection");
+  const myList = document.getElementById("myBorrowedList");
+  if (myBorrowed.length > 0) {
+    mySection.classList.remove("hidden");
+    myList.innerHTML = myBorrowed.map(i => {
+      const days = i.borrowed_at ? daysBetween(new Date(i.borrowed_at), new Date()) : 0;
+      return `<div class="my-item" onclick="openItem('${i.id}')"><div><div class="my-item-name">${esc(i.name)}</div><div class="my-item-meta">${esc(i.id)}${days>0?' · '+days+' dní':''}</div></div><span class="item-arrow">→</span></div>`;
+    }).join("");
+  } else mySection.classList.add("hidden");
+
+  // Categories with items
+  renderCategories();
+}
+
+function renderCategories() {
+  const isAdmin = currentUser.role === "admin";
+  const container = document.getElementById("categoriesList");
+  
+  // Group items by category
+  const catMap = {};
+  allCategories.forEach(c => { catMap[c.id] = { ...c, items: [] }; });
+  catMap[0] = { id: 0, name: "Bez kategorie", items: [] };
+  
+  allItems.forEach(i => {
+    const cid = i.category_id || 0;
+    if (catMap[cid]) catMap[cid].items.push(i);
+    else { catMap[0].items.push(i); }
+  });
+  
+  // Sorted categories
+  const sortedCats = allCategories.filter(c => catMap[c.id].items.length > 0);
+  if (catMap[0].items.length > 0) sortedCats.push(catMap[0]);
+  
+  let html = "";
+  for (const cat of sortedCats) {
+    const data = catMap[cat.id];
+    const avail = data.items.filter(i => i.status === "DOSTUPNÉ").length;
+    const borrowed = data.items.filter(i => i.status === "PUJCENO").length;
+    const isOpen = openCats[cat.id];
+    
+    // For regular users: show items they can interact with
+    const visibleItems = isAdmin ? data.items : data.items.filter(i => i.status === "DOSTUPNÉ" || i.borrowed_by === currentUser.id);
+    
+    html += `<div class="cat-header" onclick="toggleCat(${cat.id})">
+      <div class="cat-left"><span class="cat-arrow ${isOpen?'open':''}">▸</span><span class="cat-name">${esc(data.name)}</span></div>
+      <div class="cat-stats">
+        <span class="cat-stat" style="background:#00e5a022;color:var(--green2)">${avail}</span>
+        ${borrowed>0?`<span class="cat-stat" style="background:#ff4d4f22;color:var(--red)">${borrowed}</span>`:''}
+      </div>
+    </div>`;
+    
+    if (isOpen) {
+      html += '<div class="cat-items">';
+      const items = isAdmin ? data.items : visibleItems;
+      if (items.length === 0 && borrowed > 0) {
+        html += '<p class="empty-msg" style="padding:12px 16px;font-size:12px">Všechny položky jsou vypůjčené</p>';
+      }
+      for (const i of items) {
+        const isBorrowed = i.status === "PUJCENO";
+        const days = isBorrowed && i.borrowed_at ? daysBetween(new Date(i.borrowed_at), new Date()) : 0;
+        html += `<div class="item-row" onclick="openItem('${i.id}')">
+          <div class="item-left">
+            <div class="item-dot" style="background:${isBorrowed?'var(--red)':'var(--green2)'}"></div>
+            <div><div class="item-row-name">${esc(i.name)}${isBorrowed && days>0?`<span class="days-badge">${days}d</span>`:''}</div>
+            <div class="item-row-meta">${esc(i.id)}${isBorrowed && i.borrowed_by_name?' · '+esc(i.borrowed_by_name):''}</div></div>
+          </div>
+          <span class="item-arrow">→</span>
+        </div>`;
+      }
+      html += '</div>';
+    }
+  }
+  container.innerHTML = html || '<p class="empty-msg">Žádné položky</p>';
+}
+
+function toggleCat(id) { openCats[id] = !openCats[id]; renderCategories(); }
+
+// ── Item Detail ───────────────────────────
+function openItem(id) {
+  const item = allItems.find(i => i.id === id); if (!item) return;
+  showScreen("itemScreen");
+  document.getElementById("itemCategory").textContent = item.category_name || "Bez kategorie";
+  document.getElementById("itemTitle").textContent = item.name;
+  document.getElementById("itemIdBadge").textContent = item.id;
+  const isBorrowed = item.status === "PUJCENO";
+  const borrowedByMe = item.borrowed_by === currentUser.id;
+  const st = document.getElementById("itemStatus");
+  st.textContent = isBorrowed ? "PŮJČENO" : "K DISPOZICI";
+  st.style.background = isBorrowed?"#ff4d4f22":"#00e5a022";
+  st.style.color = isBorrowed?"var(--red)":"var(--green2)";
+  
+  const info = document.getElementById("itemBorrowedInfo");
+  if (isBorrowed && !borrowedByMe) { info.textContent = "Půjčeno: " + (item.borrowed_by_name||"neznámý"); info.classList.remove("hidden"); }
+  else info.classList.add("hidden");
+  
+  const daysInfo = document.getElementById("itemDaysInfo");
+  if (isBorrowed && item.borrowed_at) {
+    const days = daysBetween(new Date(item.borrowed_at), new Date());
+    daysInfo.textContent = "Půjčeno " + days + " " + (days===1?"den":days<5?"dny":"dní");
+    daysInfo.classList.remove("hidden");
+  } else daysInfo.classList.add("hidden");
+  
+  const act = document.getElementById("itemActions");
+  if (!isBorrowed) act.innerHTML = '<button class="action-btn-green" onclick="showPopup(\'PUJCENO\')">PŮJČIT</button>';
+  else if (borrowedByMe || currentUser.role==="admin") act.innerHTML = '<button class="action-btn-red" onclick="showPopup(\'VRACENO\')">VRÁTIT</button>';
+  else act.innerHTML = '<p class="cant-return">Tuto položku může vrátit pouze ten, kdo si ji půjčil, nebo admin.</p>';
+  window._currentItem = item;
+}
+document.getElementById("itemBack").onclick = () => loadHome();
+
+// ── Popup with note ───────────────────────
+function showPopup(action) {
+  const item = window._currentItem; const isBorrow = action==="PUJCENO";
+  const el = document.getElementById("popup");
+  el.innerHTML = `<div class="popup-card">
+    <div class="popup-icon" style="background:${isBorrow?"#00e5a018":"#ff4d4f18"};color:${isBorrow?"var(--green)":"var(--red)"}">${isBorrow?"↗":"↙"}</div>
+    <h3 class="popup-title">${isBorrow?"Potvrdit půjčení":"Potvrdit vrácení"}</h3>
+    <div class="popup-info">
+      <div class="popup-row"><span class="popup-label">Položka</span><span class="popup-value">${esc(item.name)}</span></div>
+      <div class="popup-row"><span class="popup-label">ID</span><span class="popup-value">${esc(item.id)}</span></div>
+      <div class="popup-row"><span class="popup-label">Uživatel</span><span class="popup-value">${esc(currentUser.name)}</span></div>
+      <div class="popup-row"><span class="popup-label">Akce</span><span class="popup-action-badge" style="background:${isBorrow?"#00e5a018":"#ff4d4f18"};color:${isBorrow?"var(--green)":"var(--red)"}">${isBorrow?"PŮJČENÍ":"VRÁCENÍ"}</span></div>
+    </div>
+    <input type="text" class="note-input" id="popupNote" placeholder="Poznámka (volitelné, např. 'na akci v Brně')">
+    <div class="popup-btns">
+      <button class="popup-btn-cancel" onclick="closePopup()">Zrušit</button>
+      <button class="popup-btn-confirm" id="popupConfirmBtn" style="background:${isBorrow?"linear-gradient(135deg,var(--green),var(--blue))":"linear-gradient(135deg,#ff6b6b,var(--red))"}">Potvrdit</button>
+    </div></div>`;
+  el.classList.remove("hidden");
+  el.onclick = e => { if(e.target===el) closePopup(); };
+  document.getElementById("popupConfirmBtn").onclick = async () => {
+    const btn = document.getElementById("popupConfirmBtn"); btn.textContent="Zapisuji..."; btn.disabled=true;
+    const note = document.getElementById("popupNote").value.trim();
+    try {
+      await api("POST", `/items/${item.id}/${isBorrow?"borrow":"return"}`, { note });
+      el.innerHTML = `<div class="popup-card"><div class="popup-success-icon">✓</div><h3 class="popup-title">${isBorrow?"Půjčení zaznamenáno":"Vrácení zaznamenáno"}</h3><p style="color:var(--text2);font-size:15px;margin-bottom:4px">${esc(item.name)}</p><p style="color:var(--text3);font-size:13px;margin-bottom:20px">${esc(item.id)}</p><button class="gradient-btn" onclick="closePopup();loadHome();">Zavřít</button></div>`;
+    } catch (e) { btn.textContent="Chyba: "+e.message; btn.disabled=false; }
+  };
+}
+function closePopup() { document.getElementById("popup").classList.add("hidden"); }
+
+// ── Scanner ───────────────────────────────
+let html5QrScanner = null, scanHandled = false;
+document.getElementById("scanOpenBtn").onclick = () => openScanner();
+document.getElementById("scanCloseBtn").onclick = () => closeScanner(true);
+document.getElementById("manualToggleBtn").onclick = () => { document.getElementById("manualForm").classList.remove("hidden"); document.getElementById("manualToggleBtn").classList.add("hidden"); document.getElementById("manualInput").focus(); };
+document.getElementById("manualBackBtn").onclick = () => { document.getElementById("manualForm").classList.add("hidden"); document.getElementById("manualToggleBtn").classList.remove("hidden"); };
+document.getElementById("manualSubmitBtn").onclick = () => { const v=document.getElementById("manualInput").value.trim().toUpperCase(); if(v){stopCamera();handleScan(v);} };
+document.getElementById("manualInput").addEventListener("keydown", e => { if(e.key==="Enter") document.getElementById("manualSubmitBtn").click(); });
+
+async function openScanner() {
+  scanHandled=false; showScreen("scannerScreen"); document.getElementById("scannerScreen").classList.remove("hidden"); document.getElementById("homeScreen").classList.add("hidden");
+  document.getElementById("scanHint").textContent="Namiř kameru na QR kód položky";
+  document.getElementById("qrReader").innerHTML="";
+  try {
+    html5QrScanner = new Html5Qrcode("qrReader");
+    await html5QrScanner.start({facingMode:"environment"},{fps:10,qrbox:{width:220,height:220},aspectRatio:1.0},
+      (text) => { if(scanHandled)return; scanHandled=true; const code=text.trim().toUpperCase(); stopCamera().then(()=>handleScan(code)); },
+      () => {}
+    );
+  } catch(e) { document.getElementById("scanHint").textContent="Kamera není dostupná. Použij ruční zadání."; document.getElementById("manualToggleBtn").click(); }
+}
+async function stopCamera() {
+  if(html5QrScanner){try{await html5QrScanner.stop();}catch(e){}try{html5QrScanner.clear();}catch(e){}html5QrScanner=null;}
+  document.getElementById("scannerScreen").classList.add("hidden");
+  document.getElementById("manualForm").classList.add("hidden"); document.getElementById("manualToggleBtn").classList.remove("hidden"); document.getElementById("manualInput").value="";
+}
+async function closeScanner(goHome){await stopCamera();if(goHome)loadHome();}
+function handleScan(code){const item=allItems.find(i=>i.id===code);if(item)openItem(item.id);else{alert('Položka "'+code+'" nebyla nalezena.');loadHome();}}
+
+// ── History ───────────────────────────────
+document.getElementById("historyBtn").onclick = () => { showScreen("historyScreen"); loadHistory(); };
+document.getElementById("historyBack").onclick = () => loadHome();
+
+async function loadHistory() {
+  const list = document.getElementById("historyList");
+  list.innerHTML = '<p class="empty-msg">Načítám...</p>';
+  const userName = document.getElementById("filterUser").value.trim();
+  const itemId = document.getElementById("filterItem").value.trim();
+  let qs = [];
+  if (userName) qs.push("user_name=" + encodeURIComponent(userName));
+  if (itemId) qs.push("item_id=" + encodeURIComponent(itemId));
+  const query = qs.length > 0 ? "?" + qs.join("&") : "";
+  
+  document.getElementById("historyExportBtn").classList.toggle("hidden", currentUser.role !== "admin");
+  
+  try {
+    const entries = await api("GET", "/history" + query);
+    list.innerHTML = entries.length === 0 ? '<p class="empty-msg">Žádné záznamy</p>' :
+      entries.map(h => `<div class="history-item"><div class="history-top"><span class="history-action" style="color:${h.action==="PUJCENO"?"var(--red)":"var(--green2)"}">${h.action==="PUJCENO"?"PŮJČENO":"VRÁCENO"}</span><span class="history-date">${new Date(h.timestamp).toLocaleString("cs-CZ")}</span></div><div class="history-name">${esc(h.item_name)} <span style="color:var(--text3);font-size:12px">${esc(h.item_id)}</span></div>${currentUser.role==="admin"?`<div class="history-user">${esc(h.user_name)}</div>`:""}${h.note?`<div class="history-note">📝 ${esc(h.note)}</div>`:""}</div>`).join("");
+  } catch (e) { list.innerHTML = '<p class="empty-msg">Chyba: '+esc(e.message)+'</p>'; }
+}
+["filterUser","filterItem"].forEach(id => document.getElementById(id).addEventListener("keydown", e => { if(e.key==="Enter") loadHistory(); }));
+
+function exportCSV() {
+  window.open(API + "/history/export?token=" + token, "_blank");
+  // Fallback: use auth header
+  fetch(API + "/history/export", { headers: { "Authorization": "Bearer " + token } })
+    .then(r => r.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = "historie-zapujcek.csv"; a.click();
+      URL.revokeObjectURL(url);
+    });
+}
+
+// ══════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════
+let adminUsers=[], adminItems=[], adminCats=[];
+
+document.querySelectorAll(".admin-tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    ["Overview","Categories","Items","Users"].forEach(t => document.getElementById("adminTab"+t).classList.toggle("hidden", tab.dataset.tab!==t.toLowerCase()));
+    if(tab.dataset.tab==="overview") loadAdminOverview();
+    if(tab.dataset.tab==="categories") loadAdminCategories();
+    if(tab.dataset.tab==="items") loadAdminItems();
+    if(tab.dataset.tab==="users") loadAdminUsers();
+  };
+});
+
+document.getElementById("adminBtn").onclick = () => {
+  showScreen("adminScreen");
+  document.querySelectorAll(".admin-tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("tabOverview").classList.add("active");
+  ["Overview","Categories","Items","Users"].forEach(t => document.getElementById("adminTab"+t).classList.toggle("hidden", t!=="Overview"));
+  loadAdminOverview();
+};
+document.getElementById("adminBack").onclick = () => loadHome();
+
+async function loadAdminOverview() {
+  const items = await api("GET","/items");
+  const a=items.filter(i=>i.status==="DOSTUPNÉ"), b=items.filter(i=>i.status==="PUJCENO");
+  document.getElementById("adminTabOverview").innerHTML = `
+    <div class="admin-stats"><div class="stat-box"><div class="stat-num">${items.length}</div><div class="stat-label">Celkem</div></div><div class="stat-box"><div class="stat-num" style="color:var(--green2)">${a.length}</div><div class="stat-label">Dostupné</div></div><div class="stat-box"><div class="stat-num" style="color:var(--red)">${b.length}</div><div class="stat-label">Půjčené</div></div></div>
+    ${items.map(i=>{
+      const days = i.status==="PUJCENO"&&i.borrowed_at?daysBetween(new Date(i.borrowed_at),new Date()):0;
+      return `<div class="admin-list-item"><div class="admin-list-header"><div><div class="admin-list-title">${esc(i.name)}</div><div class="admin-list-sub">${esc(i.id)} · ${esc(i.category_name||'Bez kategorie')}</div>${i.borrowed_by_name?`<div style="color:var(--orange);font-size:12px;margin-top:4px">Půjčil/a: ${esc(i.borrowed_by_name)}${days>0?' · '+days+' dní':''}</div>`:""}</div><span class="admin-list-badge" style="background:${i.status==="PUJCENO"?"#ff4d4f22":"#00e5a022"};color:${i.status==="PUJCENO"?"var(--red)":"var(--green2)"}">${i.status==="PUJCENO"?"Půjčeno":"Volné"}</span></div></div>`;
+    }).join("")}`;
+}
+
+// ── Admin: Categories ─────────────────────
+async function loadAdminCategories() {
+  adminCats = await api("GET","/categories");
+  const items = await api("GET","/items");
+  const el = document.getElementById("adminTabCategories");
+  
+  const countMap = {};
+  items.forEach(i => { const c = i.category_id||0; countMap[c]=(countMap[c]||0)+1; });
+  
+  el.innerHTML = `
+    <div class="form-card"><h3>Nová kategorie</h3><div id="catFormMsg"></div>
+      <div class="form-row"><label>Název</label><input type="text" class="input sm" id="newCatName" placeholder="např. Projektory"></div>
+      <button class="gradient-btn sm" onclick="addCategory()">PŘIDAT</button>
+    </div>
+    <h3 class="section-title">Existující kategorie</h3>
+    <div id="catAdminList">${adminCats.map((c,i) => `
+      <div class="cat-admin-item">
+        <button class="cat-order-btn" onclick="moveCat(${c.id},'up')" ${i===0?'disabled':''}>↑</button>
+        <button class="cat-order-btn" onclick="moveCat(${c.id},'down')" ${i===adminCats.length-1?'disabled':''}>↓</button>
+        <span class="cat-admin-name">${esc(c.name)}</span>
+        <span class="cat-admin-count">${countMap[c.id]||0} položek</span>
+        <button class="cat-edit-btn" onclick="editCatPopup(${c.id})">✎</button>
+        <button class="cat-del-btn" onclick="deleteCat(${c.id},'${esc(c.name)}')" ${(countMap[c.id]||0)>0?'disabled':''}>✕</button>
+      </div>`).join("")}</div>`;
+}
+
+async function addCategory() {
+  const name = document.getElementById("newCatName").value.trim();
+  const msg = document.getElementById("catFormMsg");
+  if(!name){msg.innerHTML='<div class="err-box">Vyplň název</div>';return;}
+  try { await api("POST","/admin/categories",{name}); document.getElementById("newCatName").value=""; msg.innerHTML='<div class="success-box">Přidáno!</div>'; loadAdminCategories(); setTimeout(()=>msg.innerHTML="",2000); }
+  catch(e){msg.innerHTML='<div class="err-box">'+esc(e.message)+'</div>';}
+}
+
+async function moveCat(id, dir) {
+  await api("POST","/admin/categories/reorder",{id,direction:dir});
+  loadAdminCategories();
+}
+
+function editCatPopup(id) {
+  const cat = adminCats.find(c=>c.id===id); if(!cat) return;
+  const el = document.getElementById("editPopup");
+  el.innerHTML = `<div class="popup-card" style="text-align:left"><h3 class="popup-title" style="text-align:center">Upravit kategorii</h3><div id="editCatMsg"></div>
+    <div class="form-row"><label class="field-label" style="margin-top:0">Název</label><input type="text" class="input sm" id="editCatName" value="${esc(cat.name)}"></div>
+    <div class="form-btns"><button class="form-btn-secondary" onclick="closeEdit()">Zrušit</button><button class="gradient-btn" id="editCatSave">Uložit</button></div></div>`;
+  el.classList.remove("hidden");
+  el.onclick=e=>{if(e.target===el)closeEdit();};
+  document.getElementById("editCatSave").onclick = async ()=>{
+    const name=document.getElementById("editCatName").value.trim();
+    if(!name){document.getElementById("editCatMsg").innerHTML='<div class="err-box">Vyplň název</div>';return;}
+    try{await api("PUT",`/admin/categories/${id}`,{name});closeEdit();loadAdminCategories();}catch(e){document.getElementById("editCatMsg").innerHTML='<div class="err-box">'+esc(e.message)+'</div>';}
+  };
+}
+
+async function deleteCat(id,name) {
+  if(!confirm('Smazat kategorii "'+name+'"?'))return;
+  try{await api("DELETE",`/admin/categories/${id}`);loadAdminCategories();}catch(e){alert("Chyba: "+e.message);}
+}
+
+// ── Admin: Items ──────────────────────────
+async function loadAdminItems() {
+  [adminItems, adminCats] = await Promise.all([api("GET","/items"), api("GET","/categories")]);
+  const catOptions = adminCats.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
+  const el = document.getElementById("adminTabItems");
+  el.innerHTML = `
+    <div class="form-card"><h3>Nová položka</h3><div id="itemFormMsg"></div>
+      <div class="form-row"><label>ID</label><input type="text" class="input sm" id="newItemId" placeholder="např. ITEM-006"></div>
+      <div class="form-row"><label>Název</label><input type="text" class="input sm" id="newItemName" placeholder="např. GoPro Hero 12"></div>
+      <div class="form-row"><label>Kategorie</label><select class="input sm" id="newItemCat"><option value="">— Vybrat —</option>${catOptions}</select></div>
+      <button class="gradient-btn sm" onclick="addItem()">PŘIDAT POLOŽKU</button>
+    </div>
+    <h3 class="section-title">Existující položky</h3>
+    <div id="adminItemsList">${adminItems.map(i=>`
+      <div class="admin-list-item"><div class="admin-list-header"><div><div class="admin-list-title">${esc(i.name)}</div><div class="admin-list-sub">${esc(i.id)} · ${esc(i.category_name||'Bez kategorie')}</div>${i.borrowed_by_name?`<div style="color:var(--orange);font-size:12px;margin-top:4px">Půjčeno: ${esc(i.borrowed_by_name)}</div>`:""}</div><span class="admin-list-badge" style="background:${i.status==="PUJCENO"?"#ff4d4f22":"#00e5a022"};color:${i.status==="PUJCENO"?"var(--red)":"var(--green2)"}">${i.status==="PUJCENO"?"Půjčeno":"Volné"}</span></div>
+      <div class="admin-list-actions"><button class="admin-action-btn edit" onclick="editItemPopup('${i.id}')">Upravit</button><button class="admin-action-btn delete" onclick="deleteItem('${i.id}','${esc(i.name)}')" ${i.status==="PUJCENO"?"disabled":""}>Smazat</button></div></div>`).join("")}</div>`;
+}
+
+async function addItem() {
+  const id=document.getElementById("newItemId").value.trim().toUpperCase(), name=document.getElementById("newItemName").value.trim(), cat=document.getElementById("newItemCat").value;
+  const msg=document.getElementById("itemFormMsg");
+  if(!id||!name){msg.innerHTML='<div class="err-box">Vyplň ID a název</div>';return;}
+  try{await api("POST","/admin/items",{id,name,category_id:cat||null});msg.innerHTML='<div class="success-box">Přidáno!</div>';document.getElementById("newItemId").value="";document.getElementById("newItemName").value="";loadAdminItems();setTimeout(()=>msg.innerHTML="",2000);}
+  catch(e){msg.innerHTML='<div class="err-box">'+esc(e.message)+'</div>';}
+}
+
+function editItemPopup(id) {
+  const item=adminItems.find(i=>i.id===id);if(!item)return;
+  const catOpts=adminCats.map(c=>`<option value="${c.id}" ${item.category_id===c.id?"selected":""}>${esc(c.name)}</option>`).join("");
+  const el=document.getElementById("editPopup");
+  el.innerHTML=`<div class="popup-card" style="text-align:left"><h3 class="popup-title" style="text-align:center">Upravit položku</h3><div id="editItemMsg"></div>
+    <div class="form-row"><label class="field-label" style="margin-top:0">ID</label><div style="color:var(--text3);font-size:14px;padding:6px 0">${esc(item.id)}</div></div>
+    <div class="form-row"><label class="field-label">Název</label><input type="text" class="input sm" id="editItemName" value="${esc(item.name)}"></div>
+    <div class="form-row"><label class="field-label">Kategorie</label><select class="input sm" id="editItemCat"><option value="">— Bez kategorie —</option>${catOpts}</select></div>
+    <div class="form-btns"><button class="form-btn-secondary" onclick="closeEdit()">Zrušit</button><button class="gradient-btn" id="editItemSave">Uložit</button></div></div>`;
+  el.classList.remove("hidden");el.onclick=e=>{if(e.target===el)closeEdit();};
+  document.getElementById("editItemSave").onclick=async()=>{
+    const name=document.getElementById("editItemName").value.trim(),cat=document.getElementById("editItemCat").value;
+    if(!name){document.getElementById("editItemMsg").innerHTML='<div class="err-box">Název je povinný</div>';return;}
+    try{await api("PUT",`/admin/items/${id}`,{name,category_id:cat||null});closeEdit();loadAdminItems();}catch(e){document.getElementById("editItemMsg").innerHTML='<div class="err-box">'+esc(e.message)+'</div>';}
+  };
+}
+
+async function deleteItem(id,name){
+  if(!confirm('Smazat "'+name+'"?'))return;
+  try{await api("DELETE",`/admin/items/${id}`);loadAdminItems();}catch(e){alert("Chyba: "+e.message);}
+}
+
+// ── Admin: Users ──────────────────────────
+async function loadAdminUsers() {
+  adminUsers = await api("GET","/admin/users");
+  const el = document.getElementById("adminTabUsers");
+  el.innerHTML = `
+    <div class="form-card"><h3>Nový uživatel</h3><div id="userFormMsg"></div>
+      <div class="form-row"><label>Jméno</label><input type="text" class="input sm" id="newUserName" placeholder="Jméno uživatele"></div>
+      <div class="form-row"><label>Email</label><input type="email" class="input sm" id="newUserEmail" placeholder="uživatel@ceskatelevize.cz"></div>
+      <div class="form-row"><label>PIN (4 číslice)</label><input type="text" class="input sm" id="newUserPin" placeholder="5555" maxlength="4" inputmode="numeric"></div>
+      <div class="form-row"><label>Role</label><select class="input sm" id="newUserRole"><option value="user">Uživatel</option><option value="admin">Admin</option></select></div>
+      <button class="gradient-btn sm" onclick="addUser()">PŘIDAT UŽIVATELE</button>
+    </div>
+    <h3 class="section-title">Existující uživatelé</h3>
+    <div id="adminUsersList">${adminUsers.map(u=>`
+      <div class="admin-list-item"><div class="admin-list-header"><div><div class="admin-list-title">${esc(u.name)}</div><div class="admin-list-sub">${esc(u.email)}</div></div><span class="admin-list-badge" style="background:${u.role==="admin"?"#00b4d822":"#00e5a022"};color:${u.role==="admin"?"var(--blue)":"var(--green2)"}">${u.role==="admin"?"Admin":"Uživatel"}</span></div>
+      <div class="admin-list-actions"><button class="admin-action-btn edit" onclick="editUserPopup(${u.id})">Upravit</button><button class="admin-action-btn delete" onclick="deleteUser(${u.id},'${esc(u.name)}')" ${u.id===currentUser.id?"disabled":""}>Smazat</button></div></div>`).join("")}</div>`;
+}
+
+async function addUser() {
+  const name=document.getElementById("newUserName").value.trim(),email=document.getElementById("newUserEmail").value.trim(),pin=document.getElementById("newUserPin").value.trim(),role=document.getElementById("newUserRole").value;
+  const msg=document.getElementById("userFormMsg");
+  if(!name||!email||!pin){msg.innerHTML='<div class="err-box">Vyplň vše</div>';return;}
+  if(pin.length<4||!/^\d+$/.test(pin)){msg.innerHTML='<div class="err-box">PIN: 4 číslice</div>';return;}
+  try{await api("POST","/admin/users",{name,email,pin,role});msg.innerHTML='<div class="success-box">Přidáno!</div>';document.getElementById("newUserName").value="";document.getElementById("newUserEmail").value="";document.getElementById("newUserPin").value="";loadAdminUsers();setTimeout(()=>msg.innerHTML="",2000);}
+  catch(e){msg.innerHTML='<div class="err-box">'+esc(e.message)+'</div>';}
+}
+
+function editUserPopup(id) {
+  const user=adminUsers.find(u=>u.id===id);if(!user)return;
+  const el=document.getElementById("editPopup");
+  el.innerHTML=`<div class="popup-card" style="text-align:left"><h3 class="popup-title" style="text-align:center">Upravit uživatele</h3><div id="editUserMsg"></div>
+    <div class="form-row"><label class="field-label" style="margin-top:0">Jméno</label><input type="text" class="input sm" id="editUserName" value="${esc(user.name)}"></div>
+    <div class="form-row"><label class="field-label">Email</label><input type="email" class="input sm" id="editUserEmail" value="${esc(user.email)}"></div>
+    <div class="form-row"><label class="field-label">Nový PIN (prázdné=beze změny)</label><input type="text" class="input sm" id="editUserPin" placeholder="Ponech prázdné" maxlength="4" inputmode="numeric"></div>
+    <div class="form-row"><label class="field-label">Role</label><select class="input sm" id="editUserRole"><option value="user" ${user.role==="user"?"selected":""}>Uživatel</option><option value="admin" ${user.role==="admin"?"selected":""}>Admin</option></select></div>
+    <div class="form-btns"><button class="form-btn-secondary" onclick="closeEdit()">Zrušit</button><button class="gradient-btn" id="editUserSave">Uložit</button></div></div>`;
+  el.classList.remove("hidden");el.onclick=e=>{if(e.target===el)closeEdit();};
+  document.getElementById("editUserPin").addEventListener("input",e=>{e.target.value=e.target.value.replace(/\D/g,"");});
+  document.getElementById("editUserSave").onclick=async()=>{
+    const name=document.getElementById("editUserName").value.trim(),email=document.getElementById("editUserEmail").value.trim(),pin=document.getElementById("editUserPin").value.trim(),role=document.getElementById("editUserRole").value;
+    if(!name||!email){document.getElementById("editUserMsg").innerHTML='<div class="err-box">Jméno a email jsou povinné</div>';return;}
+    const body={name,email,role};
+    if(pin){if(pin.length<4||!/^\d+$/.test(pin)){document.getElementById("editUserMsg").innerHTML='<div class="err-box">PIN: 4 číslice</div>';return;}body.pin=pin;}
+    try{await api("PUT",`/admin/users/${id}`,body);closeEdit();loadAdminUsers();}catch(e){document.getElementById("editUserMsg").innerHTML='<div class="err-box">'+esc(e.message)+'</div>';}
+  };
+}
+
+async function deleteUser(id,name){
+  if(!confirm('Smazat uživatele "'+name+'"?'))return;
+  try{await api("DELETE",`/admin/users/${id}`);loadAdminUsers();}catch(e){alert("Chyba: "+e.message);}
+}
+
+function closeEdit(){document.getElementById("editPopup").classList.add("hidden");}
+
+// ── Init ──────────────────────────────────
+if(token&&currentUser)loadHome();else showScreen("loginScreen");
+if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});
+</script>
+</body>
+</html>
