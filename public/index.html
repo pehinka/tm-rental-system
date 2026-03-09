@@ -177,10 +177,10 @@
     <div class="login-logo"><div class="logo-icon">TM</div><h1 class="login-title">rental system</h1></div>
     <p class="login-sub">Přihlas se pro přístup k systému zápůjček</p>
     <div id="loginError" class="err-box hidden"></div>
-    <label class="field-label">Email</label><input type="email" id="loginEmail" class="input" placeholder="tvuj.mail@ceskatelevize.cz">
+    <label class="field-label">Email</label><input type="email" id="loginEmail" class="input" placeholder="tvuj@email.cz">
     <label class="field-label">PIN</label><input type="password" id="loginPin" class="input" placeholder="••••" maxlength="4" inputmode="numeric">
     <button id="loginBtn" class="gradient-btn" style="margin-top:28px">PŘIHLÁSIT SE</button>
-    <div class="demo-hint">Přidělení a nebo změnu PINu provádí Tereza Gajdoš</div>
+    <div class="demo-hint"><strong>Demo účty:</strong><br>admin@firma.cz / 1234 (admin)<br>jan@firma.cz / 0000 (uživatel)</div>
   </div>
 </div>
 
@@ -354,20 +354,22 @@ function renderCategories() {
     else { catMap[0].items.push(i); }
   });
   
-  // Sorted categories
-  const sortedCats = allCategories.filter(c => catMap[c.id].items.length > 0);
+  // Show categories that have any items (regardless of borrow status)
+  const sortedCats = allCategories.filter(c => catMap[c.id] && catMap[c.id].items.length > 0);
   if (catMap[0].items.length > 0) sortedCats.push(catMap[0]);
   
   let html = "";
   for (const cat of sortedCats) {
     const data = catMap[cat.id];
+    const total = data.items.length;
     const avail = data.items.filter(i => i.status === "DOSTUPNÉ").length;
     const borrowed = data.items.filter(i => i.status === "PUJCENO").length;
     const isOpen = openCats[cat.id];
     
-    // For regular users hide categories with all items borrowed by others
+    // Items visible to this user (admin sees all, user sees available + own borrowed)
     const visibleItems = isAdmin ? data.items : data.items.filter(i => i.status === "DOSTUPNÉ" || i.borrowed_by === currentUser.id);
-    if (!isAdmin && visibleItems.length === 0 && borrowed > 0) continue; // skip fully borrowed categories for users
+    // All items borrowed by others (user can't interact with these)
+    const allBorrowedByOthers = !isAdmin && avail === 0 && visibleItems.length === 0 && borrowed > 0;
     
     html += `<div class="cat-header" onclick="toggleCat(${cat.id})">
       <div class="cat-left"><span class="cat-arrow ${isOpen?'open':''}">▸</span><span class="cat-name">${esc(data.name)}</span></div>
@@ -379,18 +381,22 @@ function renderCategories() {
     
     if (isOpen) {
       html += '<div class="cat-items">';
-      const items = isAdmin ? data.items : visibleItems;
-      for (const i of items) {
-        const isBorrowed = i.status === "PUJCENO";
-        const days = isBorrowed && i.borrowed_at ? daysBetween(new Date(i.borrowed_at), new Date()) : 0;
-        html += `<div class="item-row" onclick="openItem('${i.id}')">
-          <div class="item-left">
-            <div class="item-dot" style="background:${isBorrowed?'var(--red)':'var(--green2)'}"></div>
-            <div><div class="item-row-name">${esc(i.name)}${isBorrowed && days>0?`<span class="days-badge">${days}d</span>`:''}</div>
-            <div class="item-row-meta">${esc(i.id)}${isBorrowed && i.borrowed_by_name?' · '+esc(i.borrowed_by_name):''}</div></div>
-          </div>
-          <span class="item-arrow">→</span>
-        </div>`;
+      if (allBorrowedByOthers) {
+        html += '<p class="empty-msg" style="padding:12px 16px;font-size:12px">Všechny položky v této kategorii jsou vypůjčené</p>';
+      } else {
+        const items = isAdmin ? data.items : visibleItems;
+        for (const i of items) {
+          const isBorrowed = i.status === "PUJCENO";
+          const days = isBorrowed && i.borrowed_at ? daysBetween(new Date(i.borrowed_at), new Date()) : 0;
+          html += `<div class="item-row" onclick="openItem('${i.id}')">
+            <div class="item-left">
+              <div class="item-dot" style="background:${isBorrowed?'var(--red)':'var(--green2)'}"></div>
+              <div><div class="item-row-name">${esc(i.name)}${isBorrowed && days>0?`<span class="days-badge">${days}d</span>`:''}</div>
+              <div class="item-row-meta">${esc(i.id)}${isBorrowed && i.borrowed_by_name?' · '+esc(i.borrowed_by_name):''}</div></div>
+            </div>
+            <span class="item-arrow">→</span>
+          </div>`;
+        }
       }
       html += '</div>';
     }

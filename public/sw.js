@@ -1,8 +1,6 @@
-const CACHE_NAME = "tm-rental-v1";
-const ASSETS = ["/", "/index.html", "/manifest.json", "/icon-192.png", "/icon-512.png"];
+const CACHE_NAME = "tm-rental-v2";
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
@@ -21,8 +19,19 @@ self.addEventListener("fetch", (e) => {
     e.respondWith(fetch(e.request));
     return;
   }
-  // Ostatní — nejdřív cache, pak síť
+
+  // Network-first: zkus síť, pokud selže, použij cache
   e.respondWith(
-    caches.match(e.request).then((r) => r || fetch(e.request))
+    fetch(e.request)
+      .then((response) => {
+        // Ulož novou verzi do cache
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+        return response;
+      })
+      .catch(() => {
+        // Offline — použij cache
+        return caches.match(e.request);
+      })
   );
 });
